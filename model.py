@@ -97,7 +97,7 @@ class QTEModule(nn.Module):
         return h
     
 
-class UBRRRec(nn.Module):
+class SmartSenseModel(nn.Module):
     def __init__(self, 
                  num_sequences,
                  device_control_values,
@@ -241,7 +241,7 @@ def get_training_data():
 
 # device = "cuda" if torch.cuda.is_available() else "cpu"
 device = "cpu"
-writer = SummaryWriter("/runs/UBRR/initial")
+writer = SummaryWriter("/runs/initial")
 
 num_sequences=9
 nheads=2
@@ -256,7 +256,7 @@ pe_embed_dim=130
 device_control_values = torch.LongTensor(list(device_control_dict.values())).to(device)
 
 
-model = UBRRRec(num_sequences,
+model = SmartSenseModel(num_sequences,
                 device_control_values,
                 nheads,
                 embedding_dim,
