@@ -4,6 +4,7 @@
 ### Dataset Link: https://github.com/snudatalab/SmartSense
 
 ### Citation
+```
 @inproceedings{DBLP:conf/cikm/JeonKYLK22,
   author    = {Hyunsik Jeon and
                Jongjin Kim and
