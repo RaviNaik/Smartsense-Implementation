@@ -139,9 +139,9 @@ class SmartSenseModel(nn.Module):
                                           query_embedding_dim=self.query_embedding_dim_seq_enc,
                                           nhead=nheads)
         
-        self.pe = self.pos_embedding_sinusoidal(max_seq_len=1,
-                                                embedding_dim=self.embedding_dim, 
-                                                is_cuda=False)
+#         self.pe = self.pos_embedding_sinusoidal(max_seq_len=1,
+#                                                 embedding_dim=self.embedding_dim, 
+#                                                 is_cuda=False)
         
         self.pos_emb = nn.Embedding(9, self.embedding_dim)
         
@@ -216,28 +216,6 @@ class SmartSenseModel(nn.Module):
         yhat = torch.softmax(torch.matmul(E, s), dim=0)
         # out[ind_,:] = yhat
         return yhat
-    
-    @staticmethod
-    def pos_embedding_sinusoidal(max_seq_len, embedding_dim, is_cuda):
-        half_dim = embedding_dim // 2
-        emb = torch.log(torch.tensor(10000)) / (half_dim - 1)
-        emb = torch.exp(torch.arange(half_dim, dtype=torch.float) * -emb)
-        emb = torch.arange(max_seq_len, dtype=torch.float).unsqueeze(
-            1
-        ) * emb.unsqueeze(0)
-        emb = torch.stack((torch.sin(emb), torch.cos(emb)), dim=0).view(
-            max_seq_len, -1).t().contiguous().view(max_seq_len, -1)
-        if embedding_dim % 2 == 1:
-            emb = torch.cat([emb, torch.zeros(max_seq_len, 1)], dim=1)
-        if is_cuda:
-            return emb.cuda()
-        return emb
-    
-def get_training_data():
-    with open("data/kr/trn_instance_10.pkl", "rb") as f:
-        train_data = pickle.load(f)
-        
-    return train_data
 
 # device = "cuda" if torch.cuda.is_available() else "cpu"
 device = "cpu"
@@ -269,21 +247,6 @@ model = SmartSenseModel(num_sequences,
                 )
 
 model.to(device)
-# model.initialize(device_control_values)
-# td = TimeDistributed(model, True)
-train_data = get_training_data()
-# X = train_data[:2,:,[0,1,2,4]]
-# X = torch.LongTensor(X)
-
-# cc = train_data[0,9,[0,1]].T
-# cc = torch.LongTensor(cc)
-
-# y = train_data[:2,9,4]
-# y = torch.LongTensor(y)
-
-# outputs = model(X)
-
-# print(torch.argmax(outputs, dim=1))
 
 loss_fn = nn.CrossEntropyLoss()
 learning_rate = 0.01
@@ -307,8 +270,6 @@ for epoch in range(epochs):
         for X in batchX:            
             outputs = model(X)
             yhat.append(outputs)
-        
-        # yhat = td(batchX)
         
         loss = loss_fn(torch.vstack(yhat), batchy)
         loss.backward()
